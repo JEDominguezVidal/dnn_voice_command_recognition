@@ -1,0 +1,6 @@
+#Dynamic_reconfigurable parameters:
+rate: 10
+prob_threshold: 0.9
+SOUND_RATE: 16000
+FRAMES_PER_BUFFER: 4000
+model: 0

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!-- -->
+<launch>
+  
+  <arg name="output"                default="screen"/>
+  <arg name="virtual_env_path"      default="$(find dnn_voice_command_recognition)/virtual_etual_env"/>
+  <arg name="publisher_voice_command"        default="dnn_voice_command_recognition/detected_voice_command"/>
+  <arg name="node_name"             default="dnn_voice_command_recognition"/>
+  
+  <include file="$(find dnn_voice_command_recognition)/launch/node.launch">
+    <arg name="node_name"             value="$(arg node_name)"/>
+    <arg name="output"                value="$(arg output)"/>
+    <arg name="param_file"            value="$(find dnn_voice_command_recognition)/config/params.yaml"/>
+    <arg name="virtual_env_path"      value="$(env HOME)/virtualenv/test_venv"/>
+    <arg name="publisher_voice_command"   value="$(arg publisher_voice_command)"/>
+  </include>
+  
+  <!--<node pkg="rqt_reconfigure"
+        name="rqt_reconfigure" 
+        type="rqt_reconfigure"
+        args="test_node"
+        output="$(arg output)">
+  </node>-->
+  
+
+
+</launch>

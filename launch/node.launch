@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!-- -->
+<launch>
+  
+  <arg name="node_name"             default="python_template"/>
+  <arg name="publisher_topic_name"  default="~publisher_topic_name"/>
+  <arg name="subscriber_topic_name" default="~subscriber_topic_name"/>
+  <arg name="service_server_name"   default="~service_server_name"/>
+  <arg name="service_client_name"   default="~service_client_name"/>
+  <arg name="publisher_voice_command"  default="~publisher_voice_command"/>
+  <arg name="param_file"            default="$(find dnn_voice_command_recognition)/config/params.yaml"/>
+  <arg name="virtual_env_path"      default="$(env HOME)/virtualenv/test_venv"/>
+  
+  <arg name="output" default="screen"/>
+  
+  <node pkg="dnn_voice_command_recognition"
+        name="$(arg node_name)" 
+        type="node.py"
+        output="$(arg output)"
+        args="--venv $(arg virtual_env_path)">
+    <rosparam command="load" file="$(arg param_file)"/>
+    <remap from="~publisher_topic_name"  to="$(arg publisher_topic_name)"/>
+    <remap from="~subscriber_topic_name" to="$(arg subscriber_topic_name)"/>
+    <remap from="~service_server_name"   to="$(arg service_server_name)"/>
+    <remap from="~service_client_name"   to="$(arg service_client_name)"/>
+    <remap from="~publisher_voice_command"   to="$(arg publisher_voice_command)"/>
+  </node>
+
+</launch>

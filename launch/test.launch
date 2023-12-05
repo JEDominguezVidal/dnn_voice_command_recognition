@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!-- -->
+<launch>
+  
+  <arg name="output"                default="screen"/>
+  <arg name="virtual_env_path"      default="$(find dnn_voice_command_recognition)/virtual_etual_env"/>
+  
+  <include file="$(find dnn_voice_command_recognition)/launch/node.launch">
+    <arg name="node_name"             value="test_node"/>
+    <arg name="output"                value="$(arg output)"/>
+    <arg name="publisher_topic_name"  value="/test_node/pub"/>
+    <arg name="subscriber_topic_name" value="/test_node/sub"/>
+    <arg name="service_server_name"   value="/test_node/service"/>
+    <arg name="service_client_name"   value="/test_node/service"/>
+    <arg name="param_file"            value="$(find dnn_voice_command_recognition)/config/params.yaml"/>
+    <arg name="virtual_env_path"      value="$(env HOME)/virtualenv/test_venv"/>
+  </include>
+
+  <node pkg="rostopic" 
+        type="rostopic"
+        name="rostopic"
+        output="$(arg output)"
+        args="pub /test_node/sub std_msgs/String 'data: ''hello'' ' -r 2">
+  </node>
+
+  <!--<node pkg="rqt_reconfigure"
+        name="rqt_reconfigure" 
+        type="rqt_reconfigure"
+        args="test_node"
+        output="$(arg output)">
+  </node>-->
+  
+
+
+</launch>
