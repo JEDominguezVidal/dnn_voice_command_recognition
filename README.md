@@ -90,7 +90,6 @@ pip install pyaudio==0.2.13
 ```
 
 
-
 ## How to use the package
 
 Follow this steps to run this ROS package:
@@ -115,3 +114,8 @@ roslaunch dnn_voice_command_recognition voice_recognition.launch
 rosrun rqt_reconfigure rqt_reconfigure
 ```
 
+
+## How to retrain the models (with Google Colab)
+
+In the folder "Google Colab Examples" the user can find three notebooks importable in the free Google Colab tool with all the necessary code, as well as instructions to guide its execution, to retrain the models used for the three types of datasets (8-labels, 12 labels and 35-labels). It is also possible to modify the model to be trained in each case if the user wants to test their own architecture.
+Finally, the generated model weights are saved in the user's personal Google Drive folder. They can be downloaded and saved in the "/src/models" folder of this node for later use.
