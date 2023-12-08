@@ -1,6 +1,6 @@
 # dnn_voice_command_recognition
 
-ROS package that use Deep Learning models to detect voice commands from audio.
+ROS package that uses Deep Learning models to detect voice commands from audio.
 
 With this ROS package, the detected command is published in a custom message with header (including its time stamp), the command itself and its probability.
 
@@ -74,6 +74,21 @@ git clone https://github.com/JEDominguezVidal/dnn_voice_command_recognition
 cd ..
 catkin_make
 ```
+
+
+### Potential Installation Issues
+Two known bugs have been detected when installing the Pyaudio library:
+1. The error "ERROR: Could not build wheels for pyaudio which use PEP 517 and cannot be installed directly" has been resolved by updating pip to the latest version (23.3.1 at the time of writing this document):
+```
+pip3 install --upgrade pip
+```
+
+2. The error "ERROR: Could not build wheels for pyaudio, which is required to install pyproject.toml-based projects" has been resolved by installing the PortAudio library at system level:
+```
+sudo apt-get install portaudio19-dev
+pip install pyaudio==0.2.13
+```
+
 
 
 ## How to use the package
