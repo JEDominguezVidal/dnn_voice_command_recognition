@@ -1,6 +1,7 @@
 import whisper
 import torch
 import numpy as np
+import string  # For punctuation removal
 
 class WhisperInterface:
     """
@@ -68,7 +69,7 @@ class WhisperInterface:
 
 def map_to_command(transcript: str, command_list: list) -> str:
     """
-    Map Whisper transcript to the best matching predefined command.
+    Map Whisper transcript to predefined command by exact word matching.
     
     Args:
         transcript (str): Text transcript from Whisper
@@ -77,13 +78,20 @@ def map_to_command(transcript: str, command_list: list) -> str:
     Returns:
         str: The matched command or 'unknown' if no match found
     """
-    transcript = transcript.lower()
+    # Create punctuation removal tool
+    translator = str.maketrans('', '', string.punctuation)
     
-    # First pass: exact substring match
-    for cmd in command_list:
-        if cmd in transcript:
-            return cmd
-            
+    # Clean and split words
+    words = [word.translate(translator) for word in transcript.lower().split()]
+    
+    # Remove empty strings that might result from punctuation-only words
+    words = [word for word in words if word]
+    
+    # Check for exact word matches
+    for word in words:
+        if word in command_list:
+            return word
+    
     # Second pass: handle special cases with synonyms
     # (Commented out since it wasn't working reliably)
     # if "stop" in command_list and any(w in transcript for w in ["halt", "pause"]):
