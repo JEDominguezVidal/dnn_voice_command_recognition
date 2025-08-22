@@ -106,3 +106,18 @@ roslaunch dnn_voice_command_recognition voice_recognition.launch
 ```bash
 rosrun rqt_reconfigure rqt_reconfigure
 ```
+
+### Audio Processing Parameters
+
+These parameters control the overlapping window processing for voice command detection:
+
+- **buffer_seconds** (default: 2.0):  
+  Total duration of the audio buffer in seconds. This determines how much audio history is maintained.
+
+- **window_seconds** (default: 1.0):  
+  Duration of the processing window in seconds. This is the audio segment sent to Whisper for transcription.
+
+- **step_seconds** (default: 0.5):  
+  Step size between processing windows in seconds. This creates 50% overlap by default to ensure no commands are missed at boundaries.
+
+> **Example**: With buffer_seconds=2.0, window_seconds=1.0, and step_seconds=0.5, the system processes overlapping 1-second windows every 0.5 seconds, ensuring every audio sample is analyzed twice.
