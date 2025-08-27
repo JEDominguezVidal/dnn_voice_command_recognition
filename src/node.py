@@ -15,8 +15,16 @@ import rospy
 from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 from std_msgs.msg import String, Header
 from dnn_voice_command_recognition.msg import dnn_voice_command
-from recording_helper import AudioRecorder  # Updated for overlapping processing
+from recording_helper import AudioRecorder
 from whisper_interface import WhisperInterface, map_to_command
+
+# Model fallback mapping
+MODEL_FALLBACK_MAP = {
+    "medium": "small",
+    "small": "base",
+    "base": "tiny",
+    "tiny": None  # No fallback for tiny model
+}
 
 
 def main_thread(arg):
@@ -65,9 +73,10 @@ def main_thread(arg):
             latency = time.time() - start_time
             
             # Log latency and check for fallback
-            if latency > 0.5 and arg.whisper.model_size != "tiny":
-                rospy.logwarn(f"High latency ({latency:.2f}s), falling back to tiny model")
-                arg.whisper = WhisperInterface(model_size="tiny")
+            if latency > 0.5 and not arg.using_fallback and arg.fallback_size:
+                rospy.logwarn(f"High latency ({latency:.2f}s), falling back to {arg.fallback_size} model")
+                arg.whisper = WhisperInterface(model_size=arg.fallback_size, fallback_size=None)
+                arg.using_fallback = True
             
             command = map_to_command(transcript, arg.command_list)
             
@@ -140,8 +149,13 @@ class DNN_Voice_Command_Recognition_Node:
         self.command_list = rospy.get_param('~commands', 
             ['down', 'go', 'left', 'no', 'off', 'on', 'right', 'stop', 'up', 'yes'])
         
-        # Initialize Whisper
-        self.whisper = WhisperInterface(model_size="small")
+        # Initialize Whisper with configurable model
+        self.model_size = rospy.get_param('~model_size', 'small')
+        self.fallback_size = MODEL_FALLBACK_MAP[self.model_size]
+        self.whisper = WhisperInterface(model_size=self.model_size, fallback_size=self.fallback_size)
+        
+        # Track if we're using fallback model
+        self.using_fallback = False
         
         # Create topic publisher
         self.publisher_voice_command = rospy.Publisher("~publisher_voice_command", dnn_voice_command, queue_size=1)
@@ -176,6 +190,15 @@ class DNN_Voice_Command_Recognition_Node:
         buffer_seconds = config.get('buffer_seconds', 2.0)
         window_seconds = config.get('window_seconds', 1.0)
         step_seconds = config.get('step_seconds', 0.5)
+        model_size = config.get('model_size', 'small')
+        
+        # Update model size if changed
+        if model_size != self.model_size:
+            self.model_size = model_size
+            self.fallback_size = MODEL_FALLBACK_MAP[model_size]
+            self.whisper = WhisperInterface(model_size=self.model_size, fallback_size=self.fallback_size)
+            self.using_fallback = False
+            rospy.loginfo(f"Switched to {model_size} Whisper model")
         
         self.rate = rospy.Rate(rate)
         rospy.loginfo(f"{rospy.get_caller_id()}: Reconfigure Request: rate={rate}, FRAMES_PER_BUFFER={frames_per_buffer}, command_list={command_list_str}, buffer_seconds={buffer_seconds}, window_seconds={window_seconds}, step_seconds={step_seconds}")

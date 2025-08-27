@@ -1,6 +1,9 @@
 #Dynamic_reconfigurable parameters:
 rate: 10
-prob_threshold: 0.9
 SOUND_RATE: 16000
 FRAMES_PER_BUFFER: 4000
-model: 0
+command_list: "down,go,left,no,off,on,right,stop,up,yes"
+buffer_seconds: 2.0
+window_seconds: 1.0
+step_seconds: 0.5
+model_size: "small"
